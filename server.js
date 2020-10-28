@@ -16,9 +16,10 @@ mongoose
   .then(() => console.log('MongoDB Connected...'))
   .catch((err) => console.log(err));
 
-app.use('/api/products', productRoutes);
-
 app.use(express.json()); // body parser
+app.use('/api/products', productRoutes);
 
 app.listen(PORT);
 console.log(`Running on port ${PORT}`);
+
+module.exports = app;
