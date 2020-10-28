@@ -2,8 +2,6 @@ const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const PORT = 5000;
-
 const app = express();
 const productRoutes = require('./routes');
 const mongoose = require('mongoose');
@@ -19,7 +17,11 @@ mongoose
 app.use(express.json()); // body parser
 app.use('/api/products', productRoutes);
 
-app.listen(PORT);
-console.log(`Running on port ${PORT}`);
+app.listen(process.env.PORT);
+console.log(`Running on port ${process.env.PORT}`);
+
+app.use((error, req, res, next) => {
+  res.status(500).json({ message: error.message });
+});
 
 module.exports = app;
