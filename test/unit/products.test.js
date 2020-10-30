@@ -3,10 +3,13 @@ const productModel = require('../../models/Product');
 const httpMocks = require('node-mocks-http');
 const newProduct = require('../data/new-product.json');
 const allProducts = require('../data/all-products.json');
+const Product = require('../../models/Product');
 
 productModel.create = jest.fn();
 productModel.find = jest.fn();
+productModel.findById = jest.fn();
 
+const productId = '5dafsefsefsefsfe';
 let req, res, next;
 beforeEach(() => {
   req = httpMocks.createRequest();
@@ -66,6 +69,37 @@ describe('Product Controller Get', () => {
     const rejectedPromise = Promise.reject(errorMessage);
     productModel.find.mockReturnValue(rejectedPromise);
     await productController.getProducts(req, res, next);
+    expect(next).toBeCalledWith(errorMessage);
+  });
+});
+
+describe('Product Controller GetById', () => {
+  it('should have a getProductById', () => {
+    expect(typeof productController.getProductById).toBe('function');
+  });
+  it('should call productModel.findById', async () => {
+    req.params.id = productId;
+    await productController.getProductById(req, res, next);
+    expect(productModel.findById).toBeCalledWith(productId);
+  });
+  it('should return json body and response code 200', async () => {
+    productModel.findById.mockReturnValue(newProduct);
+    await productController.getProductById(req, res, next);
+    expect(res.statusCode).toBe(200);
+    expect(res._getJSONData()).toStrictEqual(newProduct);
+    expect(res._isEndCalled()).toBeTruthy();
+  });
+  it('sholud return 404 when item doesnt exist', async () => {
+    productModel.findById.mockReturnValue(null);
+    await productController.getProductById(req, res, next);
+    expect(res.statusCode).toBe(404);
+    expect(res._isEndCalled()).toBeTruthy();
+  });
+  it('should handle errors', async () => {
+    const errorMessage = { message: 'error' };
+    const rejectedPromise = Promise.reject(errorMessage);
+    Product.findById.mockReturnValue(rejectedPromise);
+    await productController.getProductById(req, res, next);
     expect(next).toBeCalledWith(errorMessage);
   });
 });

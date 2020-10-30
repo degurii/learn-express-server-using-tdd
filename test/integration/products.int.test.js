@@ -9,7 +9,7 @@ it('POST /api/products', async () => {
   expect(response.body.description).toBe(newProduct.description);
 });
 
-it('should return return 500 on POST /api/products', async () => {
+it('should return 500 on POST /api/products', async () => {
   const response = await request(app)
     .post('/api/products')
     .send({ name: 'no-description' });
